@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complex Problem-Solving Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f1e7; --ink:#1d2433; --muted:#5d6577; --card:#fffdf8;
+    --accent:#e2572b; --accent2:#2b6be2; --good:#1f8a5b; --bad:#c43c3c; --line:#e3dccd;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"DM Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;
+    background-image:radial-gradient(circle at 10% 0%,#ffe2d2 0,transparent 40%),radial-gradient(circle at 100% 100%,#d9e5ff 0,transparent 45%);}
+  .wrap{max-width:680px;margin:0 auto;padding:28px 18px 60px}
+  h1,h2{font-family:"Fraunces",serif;margin:0}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 10px 30px -18px rgba(29,36,51,.35)}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  .start h1{font-size:clamp(30px,7vw,44px);line-height:1.05;margin:10px 0 14px}
+  .start p{color:var(--muted);line-height:1.55;margin:0 0 10px}
+  .steps{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 22px;padding:0;list-style:none}
+  .steps li{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:500}
+  .steps li b{color:var(--accent)}
+  label.name{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+  html{color-scheme:light}
+  input[type=text]{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:16px;background:#fff;margin-bottom:16px;
+    color:#1d2433 !important;-webkit-text-fill-color:#1d2433;caret-color:#e2572b;opacity:1}
+  input[type=text]::placeholder{color:#9aa1b0;-webkit-text-fill-color:#9aa1b0}
+  .err{color:var(--bad);font-size:14px;font-weight:600;margin:-8px 0 12px;display:none}
+  .err.show{display:block}
+  input[type=text]:focus{outline:2px solid var(--accent2);border-color:transparent}
+  button{font:inherit;cursor:pointer;border:none}
+  .btn{background:var(--ink);color:#fff;padding:14px 22px;border-radius:12px;font-weight:700;font-size:16px;width:100%;transition:transform .1s}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.35;cursor:default}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:14px;color:var(--muted);font-weight:500}
+  .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:20px}
+  .bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#f2a33a);width:0;transition:width .35s}
+  .tag{display:inline-block;font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;background:#eef3ff;color:var(--accent2);margin-bottom:10px}
+  .q{font-family:"Fraunces",serif;font-size:clamp(20px,4.6vw,25px);line-height:1.3;margin:0 0 18px;font-weight:600}
+  .opts{display:grid;gap:10px}
+  .opt{text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;font-size:16px;color:var(--ink);display:flex;gap:12px;align-items:flex-start;transition:border-color .15s,background .15s}
+  .opt:hover:not(:disabled){border-color:var(--ink)}
+  .opt .k{flex:0 0 26px;height:26px;border-radius:8px;background:var(--bg);display:grid;place-items:center;font-weight:700;font-size:13px}
+  .opt.right{border-color:var(--good);background:#eaf7f0}
+  .opt.right .k{background:var(--good);color:#fff}
+  .opt.wrong{border-color:var(--bad);background:#fcecec}
+  .opt.wrong .k{background:var(--bad);color:#fff}
+  .opt:disabled{cursor:default}
+  .fb{margin:16px 0;padding:14px 16px;border-radius:14px;font-size:15px;line-height:1.5;display:none}
+  .fb.show{display:block}
+  .fb.good{background:#eaf7f0;color:#14583a}
+  .fb.bad{background:#fcecec;color:#7d2323}
+  .result{text-align:center}
+  .score{font-family:"Fraunces",serif;font-size:72px;font-weight:800;line-height:1;margin:14px 0 6px;color:var(--accent)}
+  .result p{color:var(--muted);margin:0 0 20px}
+  .review{text-align:left;margin:20px 0;display:grid;gap:8px}
+  .review div{font-size:14px;padding:10px 12px;border-radius:10px;background:#fff;border:1.5px solid var(--line)}
+  .review .ok{border-left:5px solid var(--good)}
+  .review .no{border-left:5px solid var(--bad)}
+  .ticket{background:#fff7ef;border:1.5px dashed var(--accent);border-radius:14px;padding:16px;text-align:left;margin:18px 0}
+  .ticket h2{font-size:18px;margin-bottom:6px}
+  .ticket p{margin:0;color:var(--ink);font-size:15px}
+  .hidden{display:none}
+  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:18px}
+  .champ{background:linear-gradient(135deg,#1d2433,#3a2b5c);color:#fff;border-radius:18px;padding:22px;margin:18px 0;text-align:center;position:relative;overflow:hidden}
+  .champ .crown{font-size:44px;line-height:1;animation:bob 1.6s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-6px) rotate(-6deg)}}
+  .champ .lbl{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#f2c14e;font-weight:700;margin-top:8px}
+  .champ .nm{font-family:"Fraunces",serif;font-size:clamp(26px,6vw,36px);font-weight:800;margin:4px 0}
+  .champ .sc{color:#cfd6e6;font-size:15px}
+  .board{text-align:left;display:grid;gap:6px;margin:0 0 8px}
+  .board h2{font-size:18px;margin:0 0 6px}
+  .row{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;font-size:15px}
+  .row .rk{width:26px;font-weight:800;color:var(--muted)}
+  .row .who{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .row.me{border-color:var(--accent2);background:#eef3ff}
+  .row.first .rk{color:#d49a12}
+  .note{font-size:13px;color:var(--muted);margin:6px 0 14px}
+  .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink);margin-top:10px}
+  .btn.small{width:auto;padding:8px 14px;font-size:13px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- START -->
+  <section id="start" class="card start">
+    <div class="eyebrow">Lesson Check · 8 Questions</div>
+    <h1>Complex Problem-Solving</h1>
+    <p>How well can you tackle problems that don't have one right answer? Answer each question, then read the explanation before you move on.</p>
+    <ul class="steps">
+      <li><b>1</b> Define</li><li><b>2</b> Break it down</li><li><b>3</b> Brainstorm</li><li><b>4</b> Evaluate &amp; choose</li><li><b>5</b> Act &amp; reflect</li>
+    </ul>
+    <label class="name" for="nm">Your name (shown on the leaderboard)</label>
+    <input id="nm" type="text" placeholder="e.g. Jordan" autocomplete="off" maxlength="24">
+    <div class="err" id="err">Please type your name first.</div>
+    <button class="btn" id="go">Start quiz →</button>
+    <button class="btn ghost" id="lbBtn">🏆 See leaderboard</button>
+  </section>
+
+  <!-- LEADERBOARD ONLY -->
+  <section id="lbView" class="card result hidden">
+    <div class="eyebrow">Class leaderboard</div>
+    <div class="champSlot"></div>
+    <div class="boardSlot"></div>
+    <button class="btn" id="lbBack">← Back</button>
+    <button class="btn ghost small hidden" id="clearBtn">Clear all scores</button>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="card hidden">
+    <div class="top"><span id="count">Question 1 of 8</span><span id="pts">Score: 0</span></div>
+    <div class="bar"><span id="prog"></span></div>
+    <span class="tag" id="tag"></span>
+    <p class="q" id="qtext"></p>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb"></div>
+    <button class="btn" id="next" disabled>Next →</button>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="card result hidden">
+    <div class="eyebrow" id="who">Your result</div>
+    <div class="score" id="final">0/8</div>
+    <p id="msg"></p>
+    <div class="champSlot"></div>
+    <div class="boardSlot"></div>
+    <div class="review" id="review"></div>
+    <div class="ticket">
+      <h2>🎟️ Exit ticket</h2>
+      <p>Think of one problem in your own life. Which of the 5 steps would you start with, and why? Be ready to share.</p>
+    </div>
+    <button class="btn" id="again">Try again</button>
+  </section>
+
+  <footer>Complex Problem-Solving · Class Lesson</footer>
+</div>
+
+<script>
+const Q = [
+  { tag:"Definition", q:"Which of these is the BEST example of a complex problem?",
+    o:["Fixing a flat bike tire","Reducing traffic jams in a growing city","Solving 24 ÷ 6","Finding a book in the library catalog"],
+    a:1, e:"Traffic involves many variables (people, roads, budgets, buses), trade-offs, and no single right answer. That makes it complex. The others have one clear solution." },
+  { tag:"Traits", q:"Which is NOT a typical trait of a complex problem?",
+    o:["Many connected variables","Trade-offs between solutions","One correct answer that everyone agrees on","Conditions that change over time"],
+    a:2, e:"Complex problems rarely have a single agreed-on answer. Simple problems usually do." },
+  { tag:"The 5 Steps", q:"What is the FIRST step in the problem-solving process?",
+    o:["Brainstorm solutions","Define the problem","Act and reflect","Evaluate and choose"],
+    a:1, e:"If you don't clearly define the problem first, you could end up solving the wrong one." },
+  { tag:"The 5 Steps", q:"Why do we \"break the problem into parts\"?",
+    o:["To make the problem sound bigger","So we can skip brainstorming","To make a big problem manageable and find root causes","So one person can do all the work"],
+    a:2, e:"Smaller pieces are easier to understand and solve, and they help you find what's really causing the problem." },
+  { tag:"Brainstorming", q:"During brainstorming, what's the best approach?",
+    o:["Go with the very first idea","Criticize each idea right away","Come up with lots of ideas before judging them","Only let the leader share ideas"],
+    a:2, e:"Brainstorming works best when you generate many ideas first. Judging them comes later, in Step 4." },
+  { tag:"Scenario", q:"The cafeteria wastes too much food. A group surveys students and finds that most waste comes from one unpopular side dish. Which step is this?",
+    o:["Define the problem","Break it into parts","Act and reflect","Brainstorm solutions"],
+    a:1, e:"Digging into WHERE the waste comes from means breaking the problem into parts to find the root cause." },
+  { tag:"Evaluate", q:"Your group has three possible solutions. What is the smartest way to choose one?",
+    o:["Pick the one that sounds coolest","Compare cost, time, and impact for each one","Vote without discussing","Choose all three at once"],
+    a:1, e:"Evaluating means weighing the pros, cons, and trade-offs of each option against clear criteria." },
+  { tag:"Reflect", q:"After you act on a solution, why is reflection important?",
+    o:["It isn't. Once you act, you're done","To blame someone if it fails","To check if it worked and improve it next time","To make the presentation longer"],
+    a:2, e:"Problem-solving is a cycle. Reflecting shows whether the solution worked and what to adjust." }
+];
+
+const $ = id => document.getElementById(id);
+let i=0, score=0, picks=[];
+
+/* ---------- Leaderboard (shared via db; falls back to this device) ---------- */
+let db=null, me=null, isOwner=false, entries=[], shared=false;
+const LS="cps-quiz-scores";
+function localGet(){ try{ return JSON.parse(localStorage.getItem(LS)||"[]"); }catch(e){ return []; } }
+function localSet(a){ try{ localStorage.setItem(LS,JSON.stringify(a)); }catch(e){} }
+
+function rank(list){
+  return [...list].filter(x=>x && typeof x.score==="number")
+    .sort((a,b)=> b.score-a.score || (a.at||0)-(b.at||0));
+}
+
+function renderBoards(){
+  const list=rank(shared?entries:localGet());
+  document.querySelectorAll(".champSlot").forEach(slot=>{
+    slot.innerHTML="";
+    if(!list.length){ return; }
+    const top=list[0], topScore=top.score;
+    const ties=list.filter(x=>x.score===topScore);
+    const c=document.createElement("div"); c.className="champ";
+    c.innerHTML=`<div class="crown">👑</div><div class="lbl">Highest score</div><div class="nm"></div><div class="sc"></div>`;
+    c.querySelector(".nm").textContent = ties.length>1 ? ties.map(t=>t.name).join(" & ") : top.name;
+    c.querySelector(".sc").textContent = `${topScore} / ${top.total||Q.length}` + (ties.length>1?" · it's a tie!":"");
+    slot.appendChild(c);
+  });
+  document.querySelectorAll(".boardSlot").forEach(slot=>{
+    slot.innerHTML="";
+    const b=document.createElement("div"); b.className="board";
+    const h=document.createElement("h2"); h.textContent="Leaderboard"; b.appendChild(h);
+    if(!list.length){
+      const p=document.createElement("p"); p.className="note"; p.textContent="No scores yet. Be the first!"; b.appendChild(p);
+    }
+    list.slice(0,10).forEach((x,k)=>{
+      const r=document.createElement("div");
+      r.className="row"+(k===0?" first":"")+((shared&&x.id===me)?" me":"");
+      r.innerHTML=`<span class="rk"></span><span class="who"></span><b></b>`;
+      r.children[0].textContent = k===0?"🥇":k===1?"🥈":k===2?"🥉":(k+1);
+      r.children[1].textContent = x.name||"Someone";
+      r.children[2].textContent = `${x.score}/${x.total||Q.length}`;
+      b.appendChild(r);
+    });
+    const n=document.createElement("p"); n.className="note";
+    n.textContent = shared ? "Live: updates as classmates finish. Your best score counts."
+                           : "Scores saved on this device only.";
+    b.appendChild(n);
+    slot.appendChild(b);
+  });
+}
+
+async function connect(){
+  try{
+    const [d,u]=await Promise.all([claude.use("db"),claude.use("user")]);
+    if(!d) { renderBoards(); return; }
+    db=d;
+    if(u){ try{ me=await u.id(); }catch(e){} try{ isOwner=!!u.isOwner(); }catch(e){} }
+    $("clearBtn").classList.toggle("hidden",!isOwner);
+    let timer=setTimeout(()=>{ if(!shared){ renderBoards(); } },10000);
+    db.collection("scores").onSnapshot(snap=>{
+      clearTimeout(timer);
+      shared=true;
+      const docs = snap && (snap.docs||snap) || [];
+      entries=[...docs].map(d=>{
+        const v = typeof d.data==="function" ? d.data() : (d.data||d);
+        return {...v, id:d.id};
+      });
+      renderBoards();
+    }, err=>{ clearTimeout(timer); shared=false; renderBoards(); });
+  }catch(e){ renderBoards(); }
+}
+if(window.claude && claude.use) connect(); else renderBoards();
+
+async function saveScore(name){
+  const rec={name, score, total:Q.length, at:Date.now()};
+  if(db && me && shared){
+    const prev=entries.find(x=>x.id===me);
+    if(!prev || score>prev.score || (score===prev.score && name!==prev.name)){
+      try{ await db.doc("scores/"+me).set(prev && score<=prev.score ? {...rec,score:prev.score,at:prev.at} : rec); }
+      catch(e){ shared=false; saveLocal(rec); }
+    }
+  } else saveLocal(rec);
+  renderBoards();
+}
+function saveLocal(rec){
+  const a=localGet();
+  const k=a.findIndex(x=>x.name.toLowerCase()===rec.name.toLowerCase());
+  if(k<0) a.push(rec); else if(rec.score>a[k].score) a[k]=rec;
+  localSet(a);
+}
+
+async function clearAll(){
+  if(!confirmClear){ confirmClear=true; $("clearBtn").textContent="Tap again to confirm"; return; }
+  confirmClear=false; $("clearBtn").textContent="Clear all scores";
+  localSet([]);
+  if(db && shared){ for(const x of entries){ try{ await db.doc("scores/"+x.id).delete(); }catch(e){} } }
+  renderBoards();
+}
+let confirmClear=false;
+
+function show(id){ ["start","quiz","result","lbView"].forEach(s=>$(s).classList.toggle("hidden",s!==id)); window.scrollTo(0,0); }
+
+function render(){
+  const item=Q[i];
+  $("count").textContent=`Question ${i+1} of ${Q.length}`;
+  $("pts").textContent=`Score: ${score}`;
+  $("prog").style.width=`${(i/Q.length)*100}%`;
+  $("tag").textContent=item.tag;
+  $("qtext").textContent=item.q;
+  $("fb").className="fb"; $("fb").textContent="";
+  $("next").disabled=true;
+  $("next").textContent = i===Q.length-1 ? "See my results →" : "Next →";
+  const box=$("opts"); box.innerHTML="";
+  item.o.forEach((txt,j)=>{
+    const b=document.createElement("button");
+    b.className="opt";
+    b.innerHTML=`<span class="k">${"ABCD"[j]}</span><span></span>`;
+    b.lastChild.textContent=txt;
+    b.onclick=()=>choose(j);
+    box.appendChild(b);
+  });
+}
+
+function choose(j){
+  const item=Q[i], btns=[...$("opts").children];
+  btns.forEach(b=>b.disabled=true);
+  btns[item.a].classList.add("right");
+  const ok = j===item.a;
+  if(!ok) btns[j].classList.add("wrong"); else score++;
+  picks.push(ok);
+  $("fb").className="fb show "+(ok?"good":"bad");
+  $("fb").textContent=(ok?"✅ Correct! ":"❌ Not quite. ")+item.e;
+  $("pts").textContent=`Score: ${score}`;
+  $("next").disabled=false;
+}
+
+function finish(){
+  $("prog").style.width="100%";
+  const name=$("nm").value.trim();
+  $("who").textContent = name ? `${name}'s result` : "Your result";
+  $("final").textContent=`${score}/${Q.length}`;
+  const pct=score/Q.length;
+  $("msg").textContent = pct===1 ? "Perfect! You're a problem-solving pro. 🏆"
+    : pct>=.75 ? "Great job! You've got the process down."
+    : pct>=.5 ? "Good start. Review the 5 steps and try again."
+    : "Keep going. Look over the steps and give it another shot!";
+  saveScore(name||"Anonymous");
+  $("review").innerHTML="";
+  Q.forEach((q,k)=>{
+    const d=document.createElement("div");
+    d.className=picks[k]?"ok":"no";
+    d.textContent=`${picks[k]?"✓":"✗"}  Q${k+1}: ${q.tag}`;
+    $("review").appendChild(d);
+  });
+  show("result");
+}
+
+$("nm").addEventListener("input",()=>{ $("err").classList.remove("show"); });
+$("nm").addEventListener("keydown",e=>{ if(e.key==="Enter") $("go").click(); });
+$("lbBtn").onclick=()=>{ renderBoards(); show("lbView"); };
+$("lbBack").onclick=()=>show("start");
+$("clearBtn").onclick=clearAll;
+$("go").onclick=()=>{ if(!$("nm").value.trim()){ $("err").classList.add("show"); $("nm").focus(); return; } i=0; score=0; picks=[]; render(); show("quiz"); };
+$("next").onclick=()=>{ i++; i<Q.length ? render() : finish(); };
+$("again").onclick=()=>{ i=0; score=0; picks=[]; render(); show("quiz"); };
+</script>
+</body>
+</html>
